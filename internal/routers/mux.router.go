@@ -1,4 +1,4 @@
-package controllers
+package routers
 
 import (
 	"encoding/json"
@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"go.app.api/generics"
-	"go.app.api/models"
+	"github.com/jeanSagaz/go-sample/internal/album/domain/entity"
+	"github.com/jeanSagaz/go-sample/pkg/generics"
 )
 
 func MuxHandleRequests() {
@@ -49,7 +49,7 @@ func getAlbumByIdMux(w http.ResponseWriter, r *http.Request) {
 }
 
 func postAlbumsMux(w http.ResponseWriter, r *http.Request) {
-	var newAlbum models.Album
+	var newAlbum entity.Album
 
 	// Call ioutil to bind the received JSON to
 	reqBody, err := io.ReadAll(r.Body)
@@ -76,7 +76,7 @@ func postAlbumsMux(w http.ResponseWriter, r *http.Request) {
 
 func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	var updatedAlbum models.Album
+	var updatedAlbum entity.Album
 
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -85,7 +85,7 @@ func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 
-	// al := generics.FirstOrDefault(albums, func(p *models.Album) bool { return p.Id == id })
+	// al := generics.FirstOrDefault(albums, func(p *entity.Album) bool { return p.Id == id })
 	// if al == nil {
 	// 	result := map[string]any{
 	// 		"Error":   true,
@@ -99,7 +99,7 @@ func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	idx := generics.Find(albums, func(value interface{}) bool {
-		return value.(models.Album).Id == id
+		return value.(entity.Album).Id == id
 	})
 	if idx < 0 {
 		result := map[string]any{
@@ -131,7 +131,7 @@ func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 func deleteAlbumMux(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	al := generics.FirstOrDefault(albums, func(p *models.Album) bool { return p.Id == id })
+	al := generics.FirstOrDefault(albums, func(p *entity.Album) bool { return p.Id == id })
 	if al == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -140,7 +140,7 @@ func deleteAlbumMux(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(al)
 
 	idx := generics.Find(albums, func(value interface{}) bool {
-		return value.(models.Album).Id == id
+		return value.(entity.Album).Id == id
 	})
 	if idx < 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -148,7 +148,7 @@ func deleteAlbumMux(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//albums = RemoveIndex(albums, idx)
-	albums = generics.FindAndDelete(albums, func(p *models.Album) bool { return p.Id == id })
+	albums = generics.FindAndDelete(albums, func(p *entity.Album) bool { return p.Id == id })
 
 	fmt.Println(albums)
 

@@ -2,6 +2,33 @@ version: '3.9'
 
 services:
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver-2019
+    environment:
+      SA_PASSWORD: "SqlServer2019!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_AGENT_ENABLED: "true"    
+    ports:
+      - "1434:1433"
+    # restart: always
+    # networks:
+    #   - app-golang
+
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: mssqltools
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./sql/init.sql:/tmp/init.sql
+      - ./sql/script.sql:/tmp/script.sql
+      - ./sql/init.sh:/tmp/init.sh
+    command: /bin/bash ./tmp/init.sh
+    # networks:
+    #   - app-golang
+
   app:
     container_name: app-golang
     build:
@@ -12,3 +39,10 @@ services:
       - 8080:8080      
     volumes:
       - .:/go/src/
+    # restart: always
+    # networks:
+    #   - app-golang
+
+# networks:
+#   app-golang:
+#     driver: bridge

@@ -1,4 +1,4 @@
-package models
+package entity
 
 type Album struct {
 	Id     string  `json:"id"`

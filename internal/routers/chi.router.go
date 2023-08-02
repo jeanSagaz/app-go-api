@@ -1,4 +1,4 @@
-package controllers
+package routers
 
 import (
 	"encoding/json"
@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"go.app.api/generics"
-	"go.app.api/models"
+	"github.com/jeanSagaz/go-sample/internal/album/domain/entity"
+	"github.com/jeanSagaz/go-sample/pkg/generics"
 )
 
 func ChiHandleRequests() {
@@ -54,7 +54,7 @@ func getAlbumByIdChi(w http.ResponseWriter, r *http.Request) {
 }
 
 func postAlbumsChi(w http.ResponseWriter, r *http.Request) {
-	var newAlbum models.Album
+	var newAlbum entity.Album
 
 	// Call ioutil to bind the received JSON to
 	reqBody, err := io.ReadAll(r.Body)
@@ -81,7 +81,7 @@ func postAlbumsChi(w http.ResponseWriter, r *http.Request) {
 
 func putAlbumChi(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	var updatedAlbum models.Album
+	var updatedAlbum entity.Album
 
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -104,7 +104,7 @@ func putAlbumChi(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	idx := generics.Find(albums, func(value interface{}) bool {
-		return value.(models.Album).Id == id
+		return value.(entity.Album).Id == id
 	})
 	if idx < 0 {
 		result := map[string]any{
@@ -136,7 +136,7 @@ func putAlbumChi(w http.ResponseWriter, r *http.Request) {
 func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	al := generics.FirstOrDefault(albums, func(p *models.Album) bool { return p.Id == id })
+	al := generics.FirstOrDefault(albums, func(p *entity.Album) bool { return p.Id == id })
 	if al == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -145,7 +145,7 @@ func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(al)
 
 	idx := generics.Find(albums, func(value interface{}) bool {
-		return value.(models.Album).Id == id
+		return value.(entity.Album).Id == id
 	})
 	if idx < 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -153,7 +153,7 @@ func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//albums = RemoveIndex(albums, idx)
-	albums = generics.FindAndDelete(albums, func(p *models.Album) bool { return p.Id == id })
+	albums = generics.FindAndDelete(albums, func(p *entity.Album) bool { return p.Id == id })
 
 	fmt.Println(albums)
 
