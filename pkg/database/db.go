@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jeanSagaz/go-sample/internal/customer/domain/entity"
+	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
@@ -53,12 +53,26 @@ func (d *Database) Connect() (*gorm.DB, error) {
 	d.Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
+
+	// dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
+	// 	d.User,
+	// 	d.Password,
+	// 	d.Server,
+	// 	d.Port,
+	// 	d.Database)
+	// d.Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	// 	Logger: logger.Default.LogMode(logger.Info),
+	// })
+
 	if err != nil {
 		panic(err)
 	}
 
 	if d.AutoMigrateDb {
-		d.Db.AutoMigrate(&entity.Customer{})
+		err = d.Db.AutoMigrate(&entity.Customer{})
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return d.Db, nil

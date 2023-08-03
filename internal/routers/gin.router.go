@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jeanSagaz/go-sample/internal/customer/application/data"
-	"github.com/jeanSagaz/go-sample/internal/customer/application/dto"
-	"github.com/jeanSagaz/go-sample/internal/customer/application/services"
-	"github.com/jeanSagaz/go-sample/internal/customer/domain/entity"
-	pkgEntity "github.com/jeanSagaz/go-sample/pkg/entity"
+	"github.com/jeanSagaz/go-api/internal/customer/application/dto"
+	"github.com/jeanSagaz/go-api/internal/customer/application/services"
+	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
+	"github.com/jeanSagaz/go-api/internal/customer/infra/database"
+	pkgEntity "github.com/jeanSagaz/go-api/pkg/entity"
 
 	"gorm.io/gorm"
 )
@@ -19,11 +19,6 @@ import (
 var (
 	db *gorm.DB
 )
-
-type ApiError struct {
-	Field string
-	Msg   string
-}
 
 func GinHandleRequests(Db *gorm.DB) {
 	fmt.Println("Rest API v2.0 - gin Routers")
@@ -71,19 +66,10 @@ func postCustomer(c *gin.Context) {
 		return
 	}
 
-	newCustomer, err := entity.NewCustomer(request.Name, request.Email)
-	if err != nil {
-
-		// var ve validator.ValidationErrors
-		// if errors.As(err, &ve) {
-		// 	out := make([]ApiError, len(ve))
-		// 	for i, fe := range ve {
-		// 		out[i] = ApiError{fe.Field(), msgForTag(fe.Tag())}
-		// 	}
-		// 	c.JSON(http.StatusBadRequest, gin.H{"errors": out})
-		// }
-
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	newCustomer, errors := entity.NewCustomer(request.Name, request.Email)
+	if errors != nil {
+		//c.IndentedJSON(http.StatusBadRequest, gin.H{"errors": errors})
+		c.JSON(http.StatusBadRequest, gin.H{"errors": errors})
 		return
 	}
 
@@ -91,21 +77,11 @@ func postCustomer(c *gin.Context) {
 	//customer, err := service.CustomerRepository.Insert(newCustomer)
 	customer, err := service.AddCustomer(newCustomer)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": errors})
 		return
 	}
 
 	c.IndentedJSON(http.StatusCreated, customer)
-}
-
-func msgForTag(tag string) string {
-	switch tag {
-	case "required":
-		return "This field is required"
-	case "email":
-		return "Invalid email"
-	}
-	return ""
 }
 
 func putCustomer(c *gin.Context) {
@@ -117,6 +93,18 @@ func putCustomer(c *gin.Context) {
 	}
 
 	idParam := c.Param("id")
+	id, err := pkgEntity.ParseID(idParam)
+	if err != nil {
+		var errors []pkgEntity.DomainNotification
+		errors = append(errors, pkgEntity.DomainNotification{
+			Key:   "",
+			Value: err.Error(),
+		})
+
+		//c.IndentedJSON(http.StatusBadRequest, gin.H{"errors": errors})
+		c.JSON(http.StatusBadRequest, gin.H{"errors": errors})
+		return
+	}
 
 	service := getService()
 	customer, err := service.FindCustomer(idParam)
@@ -125,20 +113,14 @@ func putCustomer(c *gin.Context) {
 		return
 	}
 
-	id, err := pkgEntity.ParseID(idParam)
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	customer.Id = id
 	customer.Name = request.Name
 	customer.Email = request.Email
 	customer.UpdatedAt = time.Now()
 
-	err = customer.Validate()
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	errors := customer.ValidateStruct()
+	if errors != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"errors": errors})
 		return
 	}
 
@@ -176,10 +158,10 @@ func deleteCustomer(c *gin.Context) {
 
 func getService() services.CustomerService {
 	return services.CustomerService{
-		ICustomerRepository: data.NewCustomerRepositoryDb(db),
+		ICustomerRepository: database.NewCustomerRepositoryDb(db),
 	}
 
 	// return services.CustomerService{
-	// 	ICustomerRepository: data.CustomerRepositoryDb{Db: db},
+	// 	ICustomerRepository: database.CustomerRepositoryDb{Db: db},
 	// }
 }

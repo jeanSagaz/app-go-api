@@ -1,9 +1,9 @@
-package data
+package database
 
 import (
 	"fmt"
 
-	"github.com/jeanSagaz/go-sample/internal/customer/domain/entity"
+	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
 	"gorm.io/gorm"
 )
 

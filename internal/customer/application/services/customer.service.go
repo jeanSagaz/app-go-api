@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/jeanSagaz/go-sample/internal/customer/domain/entity"
-	"github.com/jeanSagaz/go-sample/internal/customer/domain/interfaces"
+	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
+	"github.com/jeanSagaz/go-api/internal/customer/domain/interfaces"
 )
 
 type CustomerService struct {

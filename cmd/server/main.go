@@ -3,18 +3,27 @@ package main
 import (
 	"log"
 
-	"github.com/jeanSagaz/go-sample/internal/routers"
-	"github.com/jeanSagaz/go-sample/pkg/database"
+	"github.com/jeanSagaz/go-api/internal/routers"
+	"github.com/jeanSagaz/go-api/pkg/database"
 )
 
 var db database.Database
 
 func init() {
+	// SqlServer
 	db.Server = "localhost"
 	db.Port = 1434
 	db.User = "sa"
 	db.Password = "SqlServer2019!"
 	db.Database = "poc"
+
+	// Mysql
+	// db.Server = "localhost"
+	// db.Port = 3306
+	// db.User = "root"
+	// db.Password = ""
+	// db.Database = "poc"
+
 	db.AutoMigrateDb = true
 }
 

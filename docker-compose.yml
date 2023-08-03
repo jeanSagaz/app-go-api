@@ -20,8 +20,8 @@ services:
     depends_on:
       - sqlserver
     volumes:
-      - ./sql/init.sql:/tmp/init.sql
-      - ./sql/init.sh:/tmp/init.sh
+      - ./sql/sql-server/init.sql:/tmp/init.sql
+      - ./sql/sql-server/init.sh:/tmp/init.sh
     command: /bin/bash ./tmp/init.sh
 
   app:

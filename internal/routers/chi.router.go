@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/jeanSagaz/go-sample/internal/album/domain/entity"
-	"github.com/jeanSagaz/go-sample/pkg/generics"
+	"github.com/jeanSagaz/go-api/internal/album/domain/entity"
+	"github.com/jeanSagaz/go-api/pkg/generics"
 )
 
 func ChiHandleRequests() {

@@ -1,6 +1,6 @@
 package interfaces
 
-import "github.com/jeanSagaz/go-sample/internal/customer/domain/entity"
+import "github.com/jeanSagaz/go-api/internal/customer/domain/entity"
 
 type ICustomerRepository interface {
 	GetAll() (*[]entity.Customer, error)

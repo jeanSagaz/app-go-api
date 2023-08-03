@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jeanSagaz/go-sample/internal/album/domain/entity"
-	"github.com/jeanSagaz/go-sample/pkg/generics"
+	"github.com/jeanSagaz/go-api/internal/album/domain/entity"
+	"github.com/jeanSagaz/go-api/pkg/generics"
 )
 
 func MuxHandleRequests() {
