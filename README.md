@@ -13,6 +13,18 @@ Also you can run the app-go-api Project in Visual Studio Code (Windows, Linux or
 
 To know more about how to setup your enviroment visit the [go dev Download Guide](https://go.dev/learn/)
 
+Execute the following command in the terminal to run project:
+go run .\cmd\server\main.go
+
+Execute the following command in the terminal to run domain tests:
+go test .\internal\customer\domain\entity
+
+Execute the following command in the terminal to run repository tests:
+go test .\internal\customer\infra\database
+
+Execute the following command in the terminal to run docker:
+docker-compose up -d
+
 ## Technologies implemented:
 
 - go 1.20
@@ -21,6 +33,7 @@ To know more about how to setup your enviroment visit the [go dev Download Guide
  - gorm
  - generics
  - validator
+ - testing
 
 ## Architecture:
 
