@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/jeanSagaz/go-api/internal/routers"
+	"github.com/jeanSagaz/go-api/internal/handlers"
 	"github.com/jeanSagaz/go-api/pkg/database"
 )
 
@@ -39,7 +39,7 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	routers.GinHandleRequests(dbConnection)
-	//routers.MuxHandleRequests()
-	//routers.ChiHandleRequests()
+	handlers.GinHandleRequests(dbConnection)
+	//handlers.MuxHandleRequests()
+	//handlers.ChiHandleRequests()
 }

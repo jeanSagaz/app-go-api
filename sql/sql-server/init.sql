@@ -11,8 +11,7 @@ IF OBJECT_ID('Customers', 'U') IS NULL
 BEGIN
 
   CREATE TABLE [dbo].[Customers](
-	[Id] [varchar(36)] NOT NULL,
-	-- [Id] [uniqueidentifier] NOT NULL,
+	[Id] [uniqueidentifier] NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	[Email] [varchar](100) NOT NULL,
 	[Created_At] [datetime2](7) NOT NULL,

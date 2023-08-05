@@ -9,7 +9,7 @@ import (
 
 type Customer struct {
 	// SqlServer
-	Id        pkgEntity.ID `json:"id" validate:"-" gorm:"column:Id;type:varchar(36);primary_key;not null"`
+	Id        pkgEntity.ID `json:"id" validate:"-" gorm:"column:Id;type:uniqueidentifier;primary_key;not null"`
 	Name      string       `json:"name" validate:"required" errormgs:"Name is required" gorm:"column:Name;type:varchar(100);not null"`
 	Email     string       `json:"email" validate:"required" errormgs:"E-mail is required" gorm:"column:Email;type:varchar(100);not null"`
 	CreatedAt time.Time    `json:"created_at" validate:"-" gorm:"column:Created_At;type:datetime2;not null"`

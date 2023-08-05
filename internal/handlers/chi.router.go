@@ -1,4 +1,4 @@
-package routers
+package handlers
 
 import (
 	"encoding/json"
@@ -7,33 +7,38 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 	"github.com/jeanSagaz/go-api/internal/album/domain/entity"
 	"github.com/jeanSagaz/go-api/pkg/generics"
 )
 
-func MuxHandleRequests() {
-	fmt.Println("Rest API v2.0 - mux Routers")
+func ChiHandleRequests() {
+	fmt.Println("Rest API v2.0 - chi Routers")
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/albums", getAlbumsMux).Methods("GET")
-	router.HandleFunc("/albums/{id}", getAlbumByIdMux).Methods("GET")
-	router.HandleFunc("/albums", postAlbumsMux).Methods("POST")
-	router.HandleFunc("/albums/{id}", putAlbumMux).Methods("PUT")
-	router.HandleFunc("/albums/{id}", deleteAlbumMux).Methods("DELETE")
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Route("/albums", Router)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-func getAlbumsMux(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getAlbumsMux")
+func Router(r chi.Router) {
+	r.Get("/", getAlbumsChi)
+	r.Get("/{id}", getAlbumByIdChi)
+	r.Post("/", postAlbumsChi)
+	r.Put("/{id}", putAlbumChi)
+	r.Delete("/{id}", deleteAlbumChi)
+}
+
+func getAlbumsChi(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: getAlbumsChi")
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(albums)
 }
 
-func getAlbumByIdMux(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+func getAlbumByIdChi(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
@@ -48,7 +53,7 @@ func getAlbumByIdMux(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
 
-func postAlbumsMux(w http.ResponseWriter, r *http.Request) {
+func postAlbumsChi(w http.ResponseWriter, r *http.Request) {
 	var newAlbum entity.Album
 
 	// Call ioutil to bind the received JSON to
@@ -74,8 +79,8 @@ func postAlbumsMux(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newAlbum)
 }
 
-func putAlbumMux(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func putAlbumChi(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 	var updatedAlbum entity.Album
 
 	reqBody, err := io.ReadAll(r.Body)
@@ -85,11 +90,11 @@ func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 
-	// al := generics.FirstOrDefault(albums, func(p *entity.Album) bool { return p.Id == id })
+	// al := generics.FirstOrDefault(albums, func(p *models.Album) bool { return p.Id == id })
 	// if al == nil {
 	// 	result := map[string]any{
-	// 		"Error":   true,
-	// 		"Message": "album not found",
+	// 		"error":   true,
+	// 		"message": "album not found",
 	// 	}
 
 	// 	w.Header().Add("Content-Type", "application/json")
@@ -128,8 +133,8 @@ func putAlbumMux(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func deleteAlbumMux(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 
 	al := generics.FirstOrDefault(albums, func(p *entity.Album) bool { return p.Id == id })
 	if al == nil {

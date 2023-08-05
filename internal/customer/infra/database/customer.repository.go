@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
+
 	"gorm.io/gorm"
 )
 
@@ -17,7 +18,8 @@ func NewCustomerRepositoryDb(db *gorm.DB) *CustomerRepositoryDb {
 
 func (repo CustomerRepositoryDb) GetAll() (*[]entity.Customer, error) {
 	var customers []entity.Customer
-	result := repo.Db.Find(&customers)
+	// result := repo.Db.Find(&customers)
+	result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers]").Scan(&customers)
 
 	if result.RowsAffected == 0 {
 		return nil, fmt.Errorf("Customer does not exist")
@@ -29,10 +31,10 @@ func (repo CustomerRepositoryDb) GetAll() (*[]entity.Customer, error) {
 
 func (repo CustomerRepositoryDb) FindById(id string) (*entity.Customer, error) {
 	var customer entity.Customer
-	//repo.Db.First(&customer, "id = ?", id)
-	result := repo.Db.Find(&customer, "id = ?", id)
-	//result := repo.Db.Where("id = ?", id).First(&customer)
-	//result := repo.Db.Raw("SELECT [Id] AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", id).Scan(&customer)
+	// result := repo.Db.First(&customer, "id = ?", id)
+	// result := repo.Db.Find(&customer, "id = ?", id)
+	// result := repo.Db.Where("id = ?", id).First(&customer)
+	result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", id).Scan(&customer)
 
 	if result.RowsAffected == 0 {
 		return nil, fmt.Errorf("Customer does not exist")
@@ -62,7 +64,7 @@ func (repo CustomerRepositoryDb) Update(customer *entity.Customer) (*entity.Cust
 func (repo CustomerRepositoryDb) Delete(id string) (*entity.Customer, error) {
 	var customer entity.Customer
 
-	//if err := repo.Db.Delete(&customer).Error; err != nil {
+	// if err := repo.Db.Delete(&customer).Error; err != nil {
 	if err := repo.Db.Where("id = ?", id).Delete(&entity.Customer{}).Error; err != nil {
 		return nil, fmt.Errorf("error deleting customer with id: %s", id)
 	}
