@@ -6,8 +6,7 @@ The app-go-api Project is a open-source project written in Golang
 If you liked the project or if app-go-api helped you, please give a star ;)
 
 ## How to use:
-- You will need the latest Visual Studio Code.  
-- The latest SDK and tools can be downloaded from https://go.dev/.
+You will need the latest Visual Studio Code.  
 
 Also you can run the app-go-api Project in Visual Studio Code (Windows, Linux or MacOS).
 
