@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
 	"github.com/jeanSagaz/go-api/internal/customer/domain/interfaces"
+	"github.com/jeanSagaz/go-api/pkg/database"
 )
 
 type CustomerService struct {
@@ -17,13 +18,13 @@ func NewCustomerService(
 	}
 }
 
-func (c *CustomerService) GetAllCustomers() (*[]entity.Customer, error) {
-	customers, err := c.ICustomerRepository.GetAll()
+func (c *CustomerService) GetAllCustomers(pageSize, pageIndex int) (database.PagedResult, error) {
+	pagedResult, err := c.ICustomerRepository.GetAll(pageSize, pageIndex)
 	if err != nil {
-		return nil, err
+		return database.PagedResult{}, err
 	}
 
-	return customers, nil
+	return pagedResult, nil
 }
 
 func (c *CustomerService) FindCustomer(id string) (*entity.Customer, error) {

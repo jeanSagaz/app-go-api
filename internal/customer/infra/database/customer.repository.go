@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
+	"github.com/jeanSagaz/go-api/pkg/database"
 
 	"gorm.io/gorm"
 )
@@ -16,17 +17,38 @@ func NewCustomerRepositoryDb(db *gorm.DB) *CustomerRepositoryDb {
 	return &CustomerRepositoryDb{Db: db}
 }
 
-func (repo CustomerRepositoryDb) GetAll() (*[]entity.Customer, error) {
+func (repo CustomerRepositoryDb) GetAll(pageSize, pageIndex int) (database.PagedResult, error) {
 	var customers []entity.Customer
 	// result := repo.Db.Find(&customers)
-	result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers]").Scan(&customers)
+	calc := pageSize * (pageIndex - 1)
+	query := fmt.Sprintf("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] ORDER BY [Id] OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", calc, pageSize)
+	result := repo.Db.Raw(query).Scan(&customers)
 
 	if result.RowsAffected == 0 {
-		return nil, fmt.Errorf("Customer does not exist")
+		return database.PagedResult{}, fmt.Errorf("Customer does not exist")
 	}
 
-	fmt.Println(&customers)
-	return &customers, nil
+	total, _ := repo.getTotal()
+	return database.PagedResult{
+		TotalResults: total,
+		PageIndex:    pageIndex,
+		PageSize:     pageSize,
+		List:         customers,
+	}, nil
+}
+
+func (repo CustomerRepositoryDb) getTotal() (int, error) {
+	var total int
+	// result := repo.Db.First(&customer, "id = ?", id)
+	// result := repo.Db.Find(&customer, "id = ?", id)
+	// result := repo.Db.Where("id = ?", id).First(&customer)
+	result := repo.Db.Raw("SELECT COUNT([Id]) FROM [poc].[dbo].[Customers]").Scan(&total)
+
+	if result.RowsAffected == 0 {
+		return 0, fmt.Errorf("Customer does not exist")
+	}
+
+	return total, nil
 }
 
 func (repo CustomerRepositoryDb) FindById(id string) (*entity.Customer, error) {

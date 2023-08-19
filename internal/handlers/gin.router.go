@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,14 +26,20 @@ func NewGinHandler(
 }
 
 func (h *GinHandler) GetCustomers(c *gin.Context) {
+	pageSize := c.DefaultQuery("pageSize", "10")
+	pageIndex := c.DefaultQuery("pageIndex", "1")
+	// pageIndex := c.Query("pageIndex")
+
+	ps, _ := strconv.Atoi(pageSize)
+	pi, _ := strconv.Atoi(pageIndex)
 	service := services.NewCustomerService(h.ICustomerRepository)
-	customers, err := service.GetAllCustomers()
+	pagedResult, err := service.GetAllCustomers(ps, pi)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "customer not found"})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, customers)
+	c.IndentedJSON(http.StatusOK, pagedResult)
 }
 
 func (h *GinHandler) GetCustomerById(c *gin.Context) {
