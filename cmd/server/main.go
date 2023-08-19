@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/gin-gonic/gin"
+	infraDatabase "github.com/jeanSagaz/go-api/internal/customer/infra/database"
 	"github.com/jeanSagaz/go-api/internal/handlers"
 	"github.com/jeanSagaz/go-api/pkg/database"
 )
@@ -39,7 +41,18 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	handlers.GinHandleRequests(dbConnection)
+	customerRepository := infraDatabase.NewCustomerRepositoryDb(dbConnection)
+	ginHandler := handlers.NewGinHandler(customerRepository)
+
+	router := gin.Default()
+	router.GET("/customer/:id", ginHandler.GetCustomerById)
+	router.GET("/customer", ginHandler.GetCustomers)
+	router.POST("/customer", ginHandler.PostCustomer)
+	router.PUT("/customer/:id", ginHandler.PutCustomer)
+	router.DELETE("/customer/:id", ginHandler.DeleteCustomer)
+
+	log.Fatal(router.Run(":8080"), router)
+
 	//handlers.MuxHandleRequests()
 	//handlers.ChiHandleRequests()
 }

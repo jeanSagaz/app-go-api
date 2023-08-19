@@ -6,8 +6,15 @@ import (
 )
 
 type CustomerService struct {
-	Customer            *entity.Customer
 	ICustomerRepository interfaces.ICustomerRepository
+}
+
+func NewCustomerService(
+	ICustomerRepository interfaces.ICustomerRepository,
+) *CustomerService {
+	return &CustomerService{
+		ICustomerRepository: ICustomerRepository,
+	}
 }
 
 func (c *CustomerService) GetAllCustomers() (*[]entity.Customer, error) {
