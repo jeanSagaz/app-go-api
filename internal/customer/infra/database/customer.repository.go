@@ -44,6 +44,7 @@ func (repo CustomerRepositoryDb) getTotal() (int, error) {
 	if result.RowsAffected == 0 {
 		return 0, fmt.Errorf("Customer does not exist")
 	}
+
 	return total, nil
 }
 
