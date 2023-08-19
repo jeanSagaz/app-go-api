@@ -6,23 +6,23 @@ The app-go-api Project is a open-source project written in Golang
 If you liked the project or if app-go-api helped you, please give a star ;)
 
 ## How to use:
-- You will need the latest Visual Studio Code.
+- You will need the latest Visual Studio Code.  
 - The latest SDK and tools can be downloaded from https://go.dev/.
 
 Also you can run the app-go-api Project in Visual Studio Code (Windows, Linux or MacOS).
 
 To know more about how to setup your enviroment visit the [go dev Download Guide](https://go.dev/learn/)
 
-Execute the following command in the terminal to run project:
+Execute the following command in the terminal to run project:  
 go run .\cmd\server\main.go
 
-Execute the following command in the terminal to run domain tests:
+Execute the following command in the terminal to run domain tests:  
 go test .\internal\customer\domain\entity
 
-Execute the following command in the terminal to run repository tests:
+Execute the following command in the terminal to run repository tests:  
 go test .\internal\customer\infra\database
 
-Execute the following command in the terminal to run docker:
+Execute the following command in the terminal to run docker:  
 docker-compose up -d
 
 ## Technologies implemented:
