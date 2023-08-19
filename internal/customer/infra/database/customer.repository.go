@@ -39,9 +39,6 @@ func (repo CustomerRepositoryDb) GetAll(pageSize, pageIndex int) (database.Paged
 
 func (repo CustomerRepositoryDb) getTotal() (int, error) {
 	var total int
-	// result := repo.Db.First(&customer, "id = ?", id)
-	// result := repo.Db.Find(&customer, "id = ?", id)
-	// result := repo.Db.Where("id = ?", id).First(&customer)
 	result := repo.Db.Raw("SELECT COUNT([Id]) FROM [poc].[dbo].[Customers]").Scan(&total)
 
 	if result.RowsAffected == 0 {
