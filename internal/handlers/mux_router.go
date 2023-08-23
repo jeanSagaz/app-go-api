@@ -22,7 +22,7 @@ func MuxHandleRequests() {
 	router.HandleFunc("/albums/{id}", putAlbumMux).Methods("PUT")
 	router.HandleFunc("/albums/{id}", deleteAlbumMux).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8081", router))
 }
 
 func getAlbumsMux(w http.ResponseWriter, r *http.Request) {

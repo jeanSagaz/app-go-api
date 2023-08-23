@@ -51,8 +51,7 @@ func main() {
 	router.PUT("/customer/:id", ginHandler.PutCustomer)
 	router.DELETE("/customer/:id", ginHandler.DeleteCustomer)
 
-	log.Fatal(router.Run(":8080"), router)
-
-	//handlers.MuxHandleRequests()
+	go handlers.MuxHandleRequests()
 	//handlers.ChiHandleRequests()
+	log.Fatal(router.Run(":8080"), router)
 }
