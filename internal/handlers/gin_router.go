@@ -32,7 +32,7 @@ func (h *GinHandler) GetCustomers(c *gin.Context) {
 
 	ps, _ := strconv.Atoi(pageSize)
 	pi, _ := strconv.Atoi(pageIndex)
-	service := services.NewCustomerService(h.ICustomerRepository)
+	service := services.NewCustomerServices(h.ICustomerRepository)
 	pagedResult, err := service.GetAllCustomers(ps, pi)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "customer not found"})
@@ -45,7 +45,7 @@ func (h *GinHandler) GetCustomers(c *gin.Context) {
 func (h *GinHandler) GetCustomerById(c *gin.Context) {
 	id := c.Param("id")
 
-	service := services.NewCustomerService(h.ICustomerRepository)
+	service := services.NewCustomerServices(h.ICustomerRepository)
 	customer, err := service.FindCustomer(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "customer not found"})
@@ -70,7 +70,7 @@ func (h *GinHandler) PostCustomer(c *gin.Context) {
 		return
 	}
 
-	service := services.NewCustomerService(h.ICustomerRepository)
+	service := services.NewCustomerServices(h.ICustomerRepository)
 	// customer, err := service.CustomerRepository.Insert(newCustomer)
 	customer, err := service.AddCustomer(newCustomer)
 	if err != nil {
@@ -103,7 +103,7 @@ func (h *GinHandler) PutCustomer(c *gin.Context) {
 		return
 	}
 
-	service := services.NewCustomerService(h.ICustomerRepository)
+	service := services.NewCustomerServices(h.ICustomerRepository)
 	customer, err := service.FindCustomer(idParam)
 	if err != nil {
 		c.Status(http.StatusNotFound)
@@ -135,7 +135,7 @@ func (h *GinHandler) PutCustomer(c *gin.Context) {
 func (h *GinHandler) DeleteCustomer(c *gin.Context) {
 	id := c.Param("id")
 
-	service := services.NewCustomerService(h.ICustomerRepository)
+	service := services.NewCustomerServices(h.ICustomerRepository)
 	_, err := service.FindCustomer(id)
 	if err != nil {
 		c.Status(http.StatusNotFound)

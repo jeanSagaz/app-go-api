@@ -6,19 +6,19 @@ import (
 	"github.com/jeanSagaz/go-api/pkg/database"
 )
 
-type CustomerService struct {
+type CustomerServices struct {
 	ICustomerRepository interfaces.ICustomerRepository
 }
 
-func NewCustomerService(
+func NewCustomerServices(
 	ICustomerRepository interfaces.ICustomerRepository,
-) *CustomerService {
-	return &CustomerService{
+) *CustomerServices {
+	return &CustomerServices{
 		ICustomerRepository: ICustomerRepository,
 	}
 }
 
-func (c *CustomerService) GetAllCustomers(pageSize, pageIndex int) (database.PagedResult, error) {
+func (c *CustomerServices) GetAllCustomers(pageSize, pageIndex int) (database.PagedResult, error) {
 	pagedResult, err := c.ICustomerRepository.GetAll(pageSize, pageIndex)
 	if err != nil {
 		return database.PagedResult{}, err
@@ -27,7 +27,7 @@ func (c *CustomerService) GetAllCustomers(pageSize, pageIndex int) (database.Pag
 	return pagedResult, nil
 }
 
-func (c *CustomerService) FindCustomer(id string) (*entity.Customer, error) {
+func (c *CustomerServices) FindCustomer(id string) (*entity.Customer, error) {
 	customer, err := c.ICustomerRepository.FindById(id)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *CustomerService) FindCustomer(id string) (*entity.Customer, error) {
 	return customer, nil
 }
 
-func (c *CustomerService) AddCustomer(customer *entity.Customer) (*entity.Customer, error) {
+func (c *CustomerServices) AddCustomer(customer *entity.Customer) (*entity.Customer, error) {
 	customer, err := c.ICustomerRepository.Insert(customer)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (c *CustomerService) AddCustomer(customer *entity.Customer) (*entity.Custom
 	return customer, nil
 }
 
-func (c *CustomerService) ChangeCustomer(customer *entity.Customer) (*entity.Customer, error) {
+func (c *CustomerServices) ChangeCustomer(customer *entity.Customer) (*entity.Customer, error) {
 	customer, err := c.ICustomerRepository.Update(customer)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (c *CustomerService) ChangeCustomer(customer *entity.Customer) (*entity.Cus
 	return customer, nil
 }
 
-func (c *CustomerService) RemoveCustomer(id string) (*entity.Customer, error) {
+func (c *CustomerServices) RemoveCustomer(id string) (*entity.Customer, error) {
 	customer, err := c.ICustomerRepository.Delete(id)
 	if err != nil {
 		return nil, err
