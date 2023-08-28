@@ -30,6 +30,9 @@ func init() {
 }
 
 func main() {
+	go handlers.MuxHandleRequests()
+	go handlers.ChiHandleRequests()
+
 	dbConnection, err := db.Connect()
 	if err != nil {
 		log.Fatalf("error connecting to DB")
@@ -51,7 +54,5 @@ func main() {
 	router.PUT("/customer/:id", ginHandler.PutCustomer)
 	router.DELETE("/customer/:id", ginHandler.DeleteCustomer)
 
-	go handlers.MuxHandleRequests()
-	//handlers.ChiHandleRequests()
 	log.Fatal(router.Run(":8080"), router)
 }

@@ -20,7 +20,7 @@ func ChiHandleRequests() {
 	router.Use(middleware.Logger)
 	router.Route("/albums", Router)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8081", router))
 }
 
 func Router(r chi.Router) {
@@ -32,7 +32,6 @@ func Router(r chi.Router) {
 }
 
 func getAlbumsChi(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: getAlbumsChi")
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(albums)
 }
@@ -85,7 +84,6 @@ func putAlbumChi(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
 		w.WriteHeader(http.StatusInternalServerError)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -142,8 +140,6 @@ func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(al)
-
 	idx := generics.Find(albums, func(value interface{}) bool {
 		return value.(entity.Album).Id == id
 	})
@@ -154,8 +150,6 @@ func deleteAlbumChi(w http.ResponseWriter, r *http.Request) {
 
 	//albums = RemoveIndex(albums, idx)
 	albums = generics.FindAndDelete(albums, func(p *entity.Album) bool { return p.Id == id })
-
-	fmt.Println(albums)
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
