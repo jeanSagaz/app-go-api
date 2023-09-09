@@ -6,6 +6,7 @@ import (
 
 	"github.com/jeanSagaz/go-api/internal/customer/domain/entity"
 
+	"gorm.io/driver/sqlite"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -19,6 +20,7 @@ type Database struct {
 	Password      string
 	Database      string
 	AutoMigrateDb bool
+	Test          bool
 }
 
 func NewDb() *Database {
@@ -27,11 +29,8 @@ func NewDb() *Database {
 
 func NewDbTest() *gorm.DB {
 	dbInstance := NewDb()
-	dbInstance.Server = "localhost"
-	dbInstance.Port = 1434
-	dbInstance.User = "sa"
-	dbInstance.Password = "SqlServer2019!"
-	dbInstance.Database = "poc"
+	dbInstance.Test = true
+	dbInstance.AutoMigrateDb = true
 
 	connection, err := dbInstance.Connect()
 	if err != nil {
@@ -44,25 +43,31 @@ func NewDbTest() *gorm.DB {
 func (d *Database) Connect() (*gorm.DB, error) {
 	var err error
 
-	dsn := fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s",
-		d.User,
-		d.Password,
-		d.Server,
-		d.Port,
-		d.Database)
-	d.Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	if !d.Test {
+		dsn := fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s",
+			d.User,
+			d.Password,
+			d.Server,
+			d.Port,
+			d.Database)
+		d.Db, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),
+		})
 
-	// dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
-	// 	d.User,
-	// 	d.Password,
-	// 	d.Server,
-	// 	d.Port,
-	// 	d.Database)
-	// d.Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-	// 	Logger: logger.Default.LogMode(logger.Info),
-	// })
+		// dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
+		// 	d.User,
+		// 	d.Password,
+		// 	d.Server,
+		// 	d.Port,
+		// 	d.Database)
+		// d.Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		// 	Logger: logger.Default.LogMode(logger.Info),
+		// })
+	} else {
+		d.Db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),
+		})
+	}
 
 	if err != nil {
 		panic(err)

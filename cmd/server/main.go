@@ -27,6 +27,7 @@ func init() {
 	// db.Database = "poc"
 
 	db.AutoMigrateDb = true
+	db.Test = false
 }
 
 func main() {

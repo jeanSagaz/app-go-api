@@ -19,16 +19,16 @@ func TestCustomerRepositoryInsert(t *testing.T) {
 	}
 
 	defer sqlDB.Close()
+
 	customer, _ := entity.NewCustomer("fulano", "fulano@gmail.com")
 
 	// repo := infraDatabase.CustomerRepositoryDb {Db: db}
 	repo := infraDatabase.NewCustomerRepositoryDb(db)
 	newCustomer, err := repo.Insert(customer)
 
-	// customerSaved, _ := repo.FindById(newCustomer.Id)
 	var customerSaved entity.Customer
-	// result := db.Find(&customerSaved, "id = ?", customer.Id)
-	result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", customer.Id).Scan(&customerSaved)
+	result := db.Find(&customerSaved, "id = ?", customer.Id)
+	// result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", customer.Id).Scan(&customerSaved)
 
 	require.NotEmpty(t, customerSaved.Id)
 	require.Nil(t, err)
@@ -47,16 +47,17 @@ func TestCustomerRepositoryDelete(t *testing.T) {
 	}
 
 	defer sqlDB.Close()
+
 	customer, _ := entity.NewCustomer("fulano", "fulano@gmail.com")
 
 	// repo := infraDatabase.CustomerRepositoryDb {Db: db}
 	repo := infraDatabase.NewCustomerRepositoryDb(db)
+	db.Create(&customer)
 	_, err = repo.Delete(customer.Id.String())
 
-	// customerDeleted, _ := repo.FindById(customer.Id)
 	var customerDeleted entity.Customer
-	// result := db.Find(&customerDeleted, "id = ?", customer.Id)
-	result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", customer.Id).Scan(&customerDeleted)
+	result := db.Find(&customerDeleted, "id = ?", customer.Id)
+	// result := repo.Db.Raw("SELECT UPPER([Id]) AS Id, [Name] AS Name, [Email] AS Email, [Created_At] AS Created_At, [Updated_At] AS Updated_At FROM [poc].[dbo].[Customers] WHERE [Id] = ?", customer.Id).Scan(&customerDeleted)
 
 	require.Empty(t, customerDeleted.Id)
 	require.Nil(t, err)
